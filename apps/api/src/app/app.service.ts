@@ -37,4 +37,25 @@ export class AppService {
     });
     return user;
   } 
+  async updateUser(data: {email: string, password: string}){  
+    const tempUser = await prisma.temp.findFirst({
+      where:{
+        email: data.email
+      }
+    })
+    if (tempUser) {
+      const updateUser = await prisma.temp.update({
+        where: {
+          email: data.email
+        },
+        data: {
+          password: data.password
+        }
+      });
+      return updateUser;
+    }
+     
+    throw new HttpException("user not found",HttpStatus.BAD_REQUEST);
+ 
+  }
 }

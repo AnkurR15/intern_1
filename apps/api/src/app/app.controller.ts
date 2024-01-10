@@ -1,4 +1,4 @@
-import { Controller, Get, Post ,Body} from '@nestjs/common';
+import { Controller, Get, Post ,Body, Patch} from '@nestjs/common';
 
 import { AppService } from './app.service';
 
@@ -22,7 +22,10 @@ export class AppController {
     // implementation goes here
     return this.appService.createUser(data);
   }
-
+  @Patch('/update-user')
+  updateUser(@Body() data: {email: string, password: string}) {
+    return this.appService.updateUser(data);
+  }
   
 }
 
