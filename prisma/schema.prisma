@@ -13,4 +13,5 @@ datasource db {
 model temp {
   email   String   @unique
   password    String
+  id       Int      @id @default(autoincrement())
 }

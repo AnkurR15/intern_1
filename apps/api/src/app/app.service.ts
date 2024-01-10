@@ -8,54 +8,90 @@ const prisma = new PrismaClient()
 class UserDto{
   email: string;
   password: string;
+  id : number;
 }
 
 @Injectable()
 export class AppService {
+  /**
+   * Retrieves a message from the API.
+   * @returns An object containing the message.
+   */
   getData(): { message: string } {
     return { message: 'Hello API' };
   }
 
-  async getUser(){
-    const user : UserDto[]= await prisma.temp.findMany();
+  /**
+   * Retrieves a list of users from the database.
+   * @returns A promise that resolves to an array of UserDto objects.
+   */
+  async getUser(): Promise<UserDto[]> {
+    const user: UserDto[] = await prisma.temp.findMany();
     return user;
   }
 
-  async createUser(data: {email: string, password: string}){
+  /**
+   * Creates a new user in the database.
+   * @param data - An object containing the email and password of the user.
+   * @returns A promise that resolves to the created user.
+   * @throws HttpException if the user already exists.
+   */
+  async createUser(data: { email: string, password: string }): Promise<UserDto> {
     console.log(data);
     const tempUser = await prisma.temp.findFirst({
-      where:{
-        email: data.email
-      }
-    })
-    if(tempUser){
-      throw new HttpException("user already exists",HttpStatus.BAD_REQUEST);
-    }
-
-    const user = await prisma.temp.create({
-      data: data
-    });
-    return user;
-  } 
-  async updateUser(data: {email: string, password: string}){  
-    const tempUser = await prisma.temp.findFirst({
-      where:{
+      where: {
         email: data.email
       }
     })
     if (tempUser) {
-      const updateUser = await prisma.temp.update({
-        where: {
-          email: data.email
-        },
-        data: {
-          password: data.password
+      throw new HttpException("user already exists", HttpStatus.BAD_REQUEST);
+    }
+
+    const user: UserDto = await prisma.temp.create({
+      data: data
+    });
+    return user;
+    }
+    
+    
+    //updating user method
+    
+    async updateUser(data : {email :string, password :string}){
+      console.log(data);
+      const tempuser = await prisma.temp.findFirst({
+          where : {
+            email : data.email
+          }
+        })
+        if (tempuser){
+          const updatedUser = await prisma.temp.update({
+            where:{
+              email : data.email
+            },
+            data : {
+              password : data.password
+            }
+          })
+          return updatedUser;
+        }
+        
+      throw new HttpException("user not exist", HttpStatus.BAD_REQUEST);  
+    }
+
+    async deleteUser(id : number){
+      const user = await prisma.temp.findFirst({
+        where :{
+          id : id
+        }
+      })
+      if (!user){
+        throw new HttpException("user not exist",HttpStatus.BAD_REQUEST);
+      }
+      const deletedUser = await prisma.temp.delete({
+        where : {
+          id : id 
         }
       });
-      return updateUser;
+    return deletedUser;
     }
-     
-    throw new HttpException("user not found",HttpStatus.BAD_REQUEST);
- 
-  }
 }
