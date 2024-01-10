@@ -8,6 +8,7 @@ const prisma = new PrismaClient()
 class UserDto{
   email: string;
   password: string;
+  id : number;
 }
 
 @Injectable()
@@ -46,7 +47,7 @@ export class AppService {
       throw new HttpException("user already exists", HttpStatus.BAD_REQUEST);
     }
 
-    const user = await prisma.temp.create({
+    const user: UserDto = await prisma.temp.create({
       data: data
     });
     return user;
@@ -74,7 +75,23 @@ export class AppService {
           return updatedUser;
         }
         
-      throw new HttpException("user not exist", HttpStatus.BAD_REQUEST);
-        
+      throw new HttpException("user not exist", HttpStatus.BAD_REQUEST);  
+    }
+
+    async deleteUser(id : number){
+      const user = await prisma.temp.findFirst({
+        where :{
+          id : id
+        }
+      })
+      if (!user){
+        throw new HttpException("user not exist",HttpStatus.BAD_REQUEST);
+      }
+      const deletedUser = await prisma.temp.delete({
+        where : {
+          id : id 
+        }
+      });
+    return deletedUser;
     }
 }
