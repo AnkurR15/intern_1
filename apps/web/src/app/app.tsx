@@ -1,13 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.scss';
-
-import NxWelcome from './nx-welcome';
-
+// import { Navbar } from '../app/navbar/navbar';
+import {Route, Routes } from 'react-router-dom';
+import Navbar from '../app/navbar/navbar';
 export function App() {
   return (
-    <div>
-      <NxWelcome title="web" />
-    </div>
+    <Routes>
+        <Route path="/nav" element={<Navbar />} />
+    </Routes>
   );
 }
 
